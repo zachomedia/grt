@@ -1,0 +1,62 @@
+{{> template_start}}
+
+<table>
+   <thead>
+      <tr>
+         <th colspan="2">Route</th>
+         <th>Headsign</th>
+         <th>Time</th>
+      </tr>
+   </thead>
+   <tbody>
+      {{#each stop_times}}
+         <tr>
+            <td style="text-align: right; padding-right: 10px;">{{trip.route_short_name}}</td>
+            <td>{{trip.route_long_name}}</td>
+            <td>{{trip.trip_headsign}}</td>
+            <td style="text-align: right;">{{{format_date arrival_time "h:ia"}}}</td>
+         </tr>
+      {{/each}}
+   </tbody>
+</table>
+
+<!-- 
+
+
+<p>
+{{#each weekdays}}
+   <a href="javascript:;" onclick="document.location.hash='{{.}}';">{{.}}</a>
+{{/each}}
+</p>
+
+{{#each weekdays}}
+   <section id="{{.}}">
+      <header>
+         <h1>{{.}}</h1>
+      </header>
+      
+      <table>
+         <thead>
+            <tr>
+               <th>Route</th>
+               <th>Headsign</th>
+               <th>Time</th>
+            </tr>
+         </thead>
+         <tbody>
+            {{#each ../stop_times}}
+               {{#if_contains_weekday . ..}}
+                  <tr>
+                     <td>{{route_short_name}} &ndash; {{route_long_name}}</td>
+                     <td>{{trip_headsign}}</td>
+                     <td>{{arrival_time}}</td>
+                  </tr>
+               {{/if_contains_weekday}}
+            {{/each}}
+         </tbody>
+      </table>
+   </section>
+{{/each}}
+-->
+
+{{> template_end}}

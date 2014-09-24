@@ -1,0 +1,15 @@
+{{> template_start}}
+
+<section id="stop-schedule">
+   <header>
+      <h1>Stop Schedule</h1>
+   </header>
+   
+   <ul>
+      {{#each stops}}
+         <li><a href="stop/{{stop_id}}">{{stop_id}} &ndash; {{stop_name}}</a></li>
+      {{/each}}
+   </ul>
+</section>
+
+{{> template_end}}
