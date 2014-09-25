@@ -23,12 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-require('config.php');
+require('../config.php');
 
-require('classes/GTFS.php');
-require('classes/TemplateRenderer.php');
+require('../classes/GTFS.php');
 
 date_default_timezone_set('America/Toronto');
+
+header('Content-Type: application/json');
 
 /* Database */
 $gtfs = new GTFS('mysql:host=' . MYSQL_HOSTNAME . ';port=' . MYSQL_PORT . ';dbname=' . MYSQL_DBNAME, MYSQL_USERNAME, MYSQL_PASSWORD);
@@ -37,20 +38,29 @@ $gtfs = new GTFS('mysql:host=' . MYSQL_HOSTNAME . ';port=' . MYSQL_PORT . ';dbna
 $request_uri = str_replace(str_replace('index.php', '', $_SERVER['PHP_SELF']), '', $_SERVER['REQUEST_URI']);
 $request = explode('/', (empty($request_uri)) ? 'home' : $request_uri);
 
+/* Response */
+$response = Array();
+
+$response['meta'] = Array(
+   'method' => $request_uri,
+   'response_code' => 200,
+   'status' => 'OK'
+);
+
 switch($request[0])
 {
-   case 'home':      
-      TemplateRenderer::showTemplate('home', 'GRT Schedule', Array('stops' => $gtfs->getStops()));
+   case 'home':
+      $response['data'] = Array();
       break;
-      
+
    case 'stop':
       if (count($request) < 2) continue;
-      
-      $stop_id = $request[1]; 
-      
+
+      $stop_id = $request[1];
+
       $stop = $gtfs->getStop($stop_id);
       $stop_times = $gtfs->getStopTimes($stop_id);
-      
+
       foreach ($stop_times as $index => $stop_time)
       {
          if (strtotime($stop_time['departure_time']) < strtotime(date('H:i:s')))
@@ -58,39 +68,20 @@ switch($request[0])
             unset($stop_times[$index]);
          }// End of if
       }// End of foreach
-      
-      TemplateRenderer::showTemplate('stop', $stop['stop_id'] . ' (' . $stop['stop_name'] . ')', Array(
-         'stop' => $stop,
-         'stop_times' => $stop_times,
-      ));
-      
-      break;
-      
-      /*$stmt = $db->prepare('SELECT trips.*, stop_times.*, routes.*, calendar.* 
-                           FROM trips 
-                           INNER JOIN routes ON trips.route_id = routes.route_id
-                           INNER JOIN stop_times ON trips.trip_id = stop_times.trip_id 
-                                                 AND stop_times.stop_id=:stop_id 
-                           INNER JOIN calendar ON calendar.service_id = trips.service_id
-                           WHERE start_date <= CURDATE()
-                     	   AND end_date >= CURDATE()
-                           ORDER BY arrival_time');
-      $stmt->execute(Array(
-         ':stop_id' => $stop['stop_id']
-      ));
-      $stop_times = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-      show_template('stop', Array(
-         'page_title' => $stop['stop_id'] . ' - ' . $stop['stop_name'],
+      $response['data'] = Array(
          'stop' => $stop,
-         'stop_times' => $stop_times,
-         'weekdays' => Array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')
-      ));
-      */
-      
+         'stop_times' => $stop_times
+      );
+
+      break;
+
    default:
-      TemplateRenderer::showTemplate('not-found', 'Page Not Found');
+      $response['meta']['response_code'] = 404;
+      $response['meta']['status'] = 'Method Not Found';
       break;
 }// End of switch
-   
+
+echo json_encode($response);
+
 ?>

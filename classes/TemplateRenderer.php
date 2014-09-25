@@ -23,11 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
   
-require('lib/lightncandy.php');
+require(dirname(__FILE__) . '/../lib/lightncandy.php');
 
 class TemplateRenderer
 {
-	static public $views_directory = "views";
+	static public $views_directory = 'views';
 	static public $partials_directory = "partials";
 	
 	static function showTemplate($template, $page_title = "", $data = array())
@@ -73,6 +73,9 @@ class TemplateRenderer
       return ($args[0][$args[1]] == 1) ? $args[0] : null;
    }// End of if_eq function (helper)
 }// End of class
+
+TemplateRenderer::$views_directory = dirname(__FILE__) . '/../' . TemplateRenderer::$views_directory;
+TemplateRenderer::$partials_directory = dirname(__FILE__) . '/../' . TemplateRenderer::$partials_directory;
 
 function format_date($args, $named)
 {
